@@ -1,0 +1,35 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - main  # veya projenin ana dalı (branch) hangisiyse
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu Depodan Çek
+        uses: actions/checkout@v2
+
+      - name: JDK 11 Kurulumu
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Gradle İzinlerini Ayarla
+        run: chmod +x gradlew
+
+      - name: Gradle ile Projeyi Derle
+        run: ./gradlew build
+
+      - name: Debug APK Oluştur
+        run: ./gradlew assembleDebug
+
+      - name: APK Dosyasını Artifakt Olarak Yükle
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
